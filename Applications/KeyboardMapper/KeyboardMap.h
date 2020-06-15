@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2020, Hüseyin Aslıtürk <asliturk@hotmail.com>
  * All rights reserved.
  *
@@ -26,38 +26,29 @@
 
 #pragma once
 
-#include "KeyButton.h"
-#include "KeyboardMap.h"
-#include <LibGUI/Button.h>
-#include <LibKeyboard/CharacterMapData.h>
+#include <AK/String.h>
+#include <AK/Vector.h>
 
-class KeyboardMapperWidget : public GUI::Widget {
-    C_OBJECT(KeyboardMapperWidget)
+namespace KeyboardMapper {
 
-public:
-    KeyboardMapperWidget();
-    virtual ~KeyboardMapperWidget() override;
-
-    void create_frame();
-    void load_from_file(const String);
-    void save();
-    void save_to_file(const StringView&);
-
-protected:
-    virtual void keydown_event(GUI::KeyEvent&) override;
-    virtual void keyup_event(GUI::KeyEvent&) override;
-
-    void set_current_map(const String);
-    void update_window_title();
-
-private:
-    KeyboardMapper::KeyboardMap m_keyboard_map;
-
-    Vector<KeyButton*> m_keys;
-    RefPtr<GUI::Widget> m_map_group;
-
-    String m_file_name;
-    Keyboard::CharacterMapData m_character_map;
-    String m_current_map_name;
-    bool m_modified { false };
+struct KeyPosition {
+    u32 scancode;
+    int x;
+    int y;
+    int width;
+    int height;
+    bool enabled;
+    int map_index;
+    AK::String name;
 };
+
+struct KeyboardMap {
+    String name;
+    u8 width;
+    u8 height;
+    Vector<KeyPosition> keys;
+};
+
+KeyboardMap load_map();
+
+}

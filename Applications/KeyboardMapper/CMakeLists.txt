@@ -1,8 +1,9 @@
 set(SOURCES
+    KeyboardMap.cpp
     KeyboardMapperWidget.cpp
     KeyButton.cpp
     main.cpp
 )
 
 serenity_bin(KeyboardMapper)
-target_link_libraries(KeyboardMapper LibGUI LibKeyboard)
+target_link_libraries(KeyboardMapper LibGUI LibKeyboard LibCore)

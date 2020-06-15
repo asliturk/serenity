@@ -25,7 +25,6 @@
  */
 
 #include "KeyboardMapperWidget.h"
-#include "KeyPositions.h"
 #include <LibCore/File.h>
 #include <LibGUI/BoxLayout.h>
 #include <LibGUI/InputBox.h>
@@ -38,6 +37,8 @@
 
 KeyboardMapperWidget::KeyboardMapperWidget()
 {
+    m_keyboard_map = KeyboardMapper::load_map();
+
     create_frame();
 }
 
@@ -53,17 +54,19 @@ void KeyboardMapperWidget::create_frame()
     layout()->set_margins({ 4, 4, 4, 4 });
 
     auto& main_widget = add<GUI::Widget>();
-    main_widget.set_relative_rect(0, 0, 200, 200);
+    main_widget.set_relative_rect(0, 0, m_keyboard_map.width, m_keyboard_map.height);
 
-    m_keys.resize(KEY_COUNT);
+    size_t key_count = m_keyboard_map.keys.size();
+    m_keys.resize(key_count);
 
-    for (unsigned i = 0; i < KEY_COUNT; i++) {
-        Gfx::IntRect rect = { keys[i].x, keys[i].y, keys[i].width, keys[i].height };
+    for (unsigned i = 0; i < key_count; i++) {
+        auto key = m_keyboard_map.keys[i];
+        Gfx::IntRect rect = { key.x, key.y, key.width, key.height };
 
         auto& tmp_button = main_widget.add<KeyButton>();
         tmp_button.set_relative_rect(rect);
-        tmp_button.set_text(keys[i].name);
-        tmp_button.set_enabled(keys[i].enabled);
+        tmp_button.set_text(key.name);
+        tmp_button.set_enabled(key.enabled);
 
         tmp_button.on_click = [&]() {
             auto input_box = GUI::InputBox::construct("New Character:", "Select Character", window());
@@ -73,7 +76,7 @@ void KeyboardMapperWidget::create_frame()
                 int i = m_keys.find_first_index(&tmp_button).value_or(0);
                 ASSERT(i > 0);
 
-                auto index = keys[i].map_index;
+                auto index = key.map_index;
                 ASSERT(index > 0);
 
                 tmp_button.set_text(value);
@@ -227,17 +230,19 @@ void KeyboardMapperWidget::save_to_file(const StringView& file_name)
 
 void KeyboardMapperWidget::keydown_event(GUI::KeyEvent& event)
 {
-    for (int i = 0; i < KEY_COUNT; i++) {
+    size_t key_count = m_keyboard_map.keys.size();
+    for (size_t i = 0; i < key_count; i++) {
         auto& tmp_button = m_keys.at(i);
-        tmp_button->set_pressed(keys[i].scancode == event.scancode());
+        tmp_button->set_pressed(m_keyboard_map.keys[i].scancode == event.scancode());
         tmp_button->update();
     }
 }
 
 void KeyboardMapperWidget::keyup_event(GUI::KeyEvent& event)
 {
-    for (int i = 0; i < KEY_COUNT; i++) {
-        if (keys[i].scancode == event.scancode()) {
+    size_t key_count = m_keyboard_map.keys.size();
+    for (size_t i = 0; i < key_count; i++) {
+        if (m_keyboard_map.keys[i].scancode == event.scancode()) {
             auto& tmp_button = m_keys.at(i);
             tmp_button->set_pressed(false);
             tmp_button->update();
@@ -263,8 +268,9 @@ void KeyboardMapperWidget::set_current_map(const String current_map)
         ASSERT_NOT_REACHED();
     }
 
-    for (unsigned k = 0; k < KEY_COUNT; k++) {
-        auto index = keys[k].map_index;
+    size_t key_count = m_keyboard_map.keys.size();
+    for (size_t k = 0; k < key_count; k++) {
+        auto index = m_keyboard_map.keys[k].map_index;
         if (index == 0)
             continue;
 
