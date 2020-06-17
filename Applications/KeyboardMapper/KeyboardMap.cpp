@@ -30,6 +30,8 @@
 #include <AK/JsonValue.h>
 #include <LibCore/File.h>
 
+#include <AK/String.h>
+
 KeyboardMapper::KeyboardMap KeyboardMapper::load_map()
 {
     String file_name = "/res/keyboard-layout.json";
@@ -53,11 +55,46 @@ KeyboardMapper::KeyboardMap KeyboardMapper::load_map()
 
     auto json_keys_array = json_map_object.get("Keys").as_array();
 
+    auto parse_hex = [&](const StringView str) {
+        u32 res = 0;
+        StringView hex_str;
+
+        if (str.starts_with("0x")) {
+            hex_str = str.substring_view(2, str.length() - 2);
+        } else {
+            hex_str = str;
+        }
+
+        for (size_t i = 0; i < hex_str.length(); i++) {
+            char digit = hex_str[i];
+            u8 digit_value;
+
+            if (digit >= '0' && digit <= '9') {
+                digit_value = digit - '0';
+            } else if (digit >= 'a' && digit <= 'f') {
+                digit_value = digit - 'a';
+            } else if (digit >= 'A' && digit <= 'F') {
+                digit_value = digit - 'A';
+            } else {
+                dbg() << "Unknown hex digit:" << digit;
+                ASSERT(false);
+            }
+
+            res = (res << 4) + digit_value;
+        }
+
+        return res;
+    };
+
     json_keys_array.for_each([&](auto& value) {
         auto fields = value.as_array();
+        String scan_code_as_hex_string = fields[0].as_string();
+        scan_code_as_hex_string.to_uint();
 
         KeyPosition key_position;
-        key_position.scancode = fields[0].as_string().to_uint().value_or(0);
+        dbg() << "as_string: " << fields[0].as_string();
+
+        key_position.scancode = parse_hex(scan_code_as_hex_string);
         key_position.x = fields[1].as_u32();
         key_position.y = fields[2].as_u32();
         key_position.width = fields[3].as_u32();

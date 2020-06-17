@@ -232,6 +232,9 @@ void KeyboardMapperWidget::keydown_event(GUI::KeyEvent& event)
 {
     size_t key_count = m_keyboard_map.keys.size();
     for (size_t i = 0; i < key_count; i++) {
+
+        dbg() << "i:" << i << ", e.scancode=" << event.scancode() << ", key.scancode:" << m_keyboard_map.keys[i].scancode;
+
         auto& tmp_button = m_keys.at(i);
         tmp_button->set_pressed(m_keyboard_map.keys[i].scancode == event.scancode());
         tmp_button->update();
