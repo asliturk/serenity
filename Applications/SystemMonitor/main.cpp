@@ -35,6 +35,7 @@
 #include "ProcessTableView.h"
 #include "ProcessUnveiledPathsWidget.h"
 #include <LibCore/Timer.h>
+#include <LibDesktop/Dialoger.h>
 #include <LibGUI/AboutDialog.h>
 #include <LibGUI/Action.h>
 #include <LibGUI/ActionGroup.h>
@@ -78,7 +79,7 @@ static NonnullRefPtr<GUI::Widget> build_graphs_tab();
 class UnavailableProcessWidget final : public GUI::Frame {
     C_OBJECT(UnavailableProcessWidget)
 public:
-    virtual ~UnavailableProcessWidget() override { }
+    virtual ~UnavailableProcessWidget() override {}
 
     const String& text() const { return m_text; }
     void set_text(String text) { m_text = move(text); }
@@ -118,7 +119,7 @@ int main(int argc, char** argv)
 
     GUI::Application app(argc, argv);
 
-    if (pledge("stdio proc shared_buffer accept rpath", nullptr) < 0) {
+    if (pledge("stdio proc shared_buffer accept rpath unix", nullptr) < 0) {
         perror("pledge");
         return 1;
     }
@@ -139,6 +140,11 @@ int main(int argc, char** argv)
     }
 
     if (unveil("/dev", "r") < 0) {
+        perror("unveil");
+        return 1;
+    }
+
+    if (unveil("/tmp/portal/dialog", "rw") < 0) {
         perror("unveil");
         return 1;
     }
@@ -244,7 +250,9 @@ int main(int argc, char** argv)
 
     auto& help_menu = menubar->add_menu("Help");
     help_menu.add_action(GUI::Action::create("About", [&](const GUI::Action&) {
-        GUI::AboutDialog::show("System Monitor", Gfx::Bitmap::load_from_file("/res/icons/32x32/app-system-monitor.png"), window);
+//        GUI::AboutDialog::show("System Monitor", Gfx::Bitmap::load_from_file("/res/icons/32x32/app-system-monitor.png"), window);
+        Desktop::Dialoger::about("SerenityOS", "/res/icons/16x16/ladybug.png");
+
     }));
 
     app.set_menubar(move(menubar));
@@ -285,7 +293,7 @@ int main(int argc, char** argv)
 
 class ProgressBarPaintingDelegate final : public GUI::TableCellPaintingDelegate {
 public:
-    virtual ~ProgressBarPaintingDelegate() override { }
+    virtual ~ProgressBarPaintingDelegate() override {}
 
     virtual void paint(GUI::Painter& painter, const Gfx::IntRect& a_rect, const Palette& palette, const GUI::Model& model, const GUI::ModelIndex& index) override
     {
