@@ -24,33 +24,31 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <LibGUI/AboutDialog.h>
+#include <LibDesktop/Dialoger.h>
 #include <LibGUI/Application.h>
-#include <LibGfx/Bitmap.h>
 #include <stdio.h>
-#include <sys/utsname.h>
 
 int main(int argc, char** argv)
 {
-    if (pledge("stdio shared_buffer accept rpath unix cpath fattr", nullptr) < 0) {
+    if (pledge("stdio shared_buffer cpath fattr unix", nullptr) < 0) {
         perror("pledge");
         return 1;
     }
 
     GUI::Application app(argc, argv);
 
-    if (pledge("stdio shared_buffer accept rpath", nullptr) < 0) {
+    if (pledge("stdio unix", nullptr) < 0) {
         perror("pledge");
         return 1;
     }
 
-    if (unveil("/res", "r") < 0) {
+    if (unveil("/tmp/portal/dialog", "rw") < 0) {
         perror("unveil");
         return 1;
     }
 
     unveil(nullptr, nullptr);
 
-    GUI::AboutDialog::show("SerenityOS", nullptr, nullptr, Gfx::Bitmap::load_from_file("/res/icons/16x16/ladybug.png"));
+    Desktop::Dialoger::about("SerenityOS", "/res/icons/16x16/ladybug.png");
     return app.exec();
 }
