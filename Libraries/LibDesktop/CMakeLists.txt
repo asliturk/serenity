@@ -1,4 +1,5 @@
 set(SOURCES
+    Dialoger.cpp
     Launcher.cpp
 )
 
