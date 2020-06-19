@@ -3,4 +3,4 @@ set(SOURCES
 )
 
 serenity_bin(Terminal)
-target_link_libraries(Terminal LibGUI LibVT)
+target_link_libraries(Terminal LibGUI LibDesktop LibVT)

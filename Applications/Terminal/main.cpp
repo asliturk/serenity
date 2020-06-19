@@ -26,6 +26,7 @@
 
 #include <Kernel/KeyCode.h>
 #include <LibCore/ArgsParser.h>
+#include <LibDesktop/Dialoger.h>
 #include <LibGUI/AboutDialog.h>
 #include <LibGUI/Action.h>
 #include <LibGUI/ActionGroup.h>
@@ -304,7 +305,7 @@ int main(int argc, char** argv)
 
     auto& help_menu = menubar->add_menu("Help");
     help_menu.add_action(GUI::Action::create("About", [&](auto&) {
-        GUI::AboutDialog::show("Terminal", Gfx::Bitmap::load_from_file("/res/icons/32x32/app-terminal.png"), window);
+        Desktop::Dialoger::about("SerenityOS", "/res/icons/16x16/ladybug.png");
     }));
 
     app.set_menubar(move(menubar));
@@ -320,6 +321,11 @@ int main(int argc, char** argv)
     }
 
     if (unveil("/tmp/portal/launch", "rw") < 0) {
+        perror("unveil");
+        return 1;
+    }
+
+    if (unveil("/tmp/portal/dialog", "rw") < 0) {
         perror("unveil");
         return 1;
     }
