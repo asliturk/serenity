@@ -1,0 +1,6 @@
+endpoint DialogServer = 1201
+{
+    Greet() => (i32 client_id)
+
+    AboutDialog(String name, String icon_path)=> (i32 client_id)
+}

@@ -1,0 +1,4 @@
+endpoint DialogClient = 1202
+{
+    Dummy() =|
+}
