@@ -80,7 +80,7 @@ String mime_type_from_content_type(const String& content_type)
 static String guess_mime_type_based_on_filename(const URL& url)
 {
     if (url.path().ends_with(".pam"))
-        return "image/x‑portable‑anymap";
+        return "image/x-portable-arbitrarymap";
     if (url.path().ends_with(".pbm"))
         return "image/x‑portable‑bitmap";
     if (url.path().ends_with(".pgm"))
