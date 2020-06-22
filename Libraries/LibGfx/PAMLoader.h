@@ -31,15 +31,15 @@
 
 namespace Gfx {
 
-RefPtr<Gfx::Bitmap> load_pgm(const StringView& path);
-RefPtr<Gfx::Bitmap> load_pgm_from_memory(const u8*, size_t);
+RefPtr<Gfx::Bitmap> load_pam(const StringView& path);
+RefPtr<Gfx::Bitmap> load_pam_from_memory(const u8*, size_t);
 
-struct PGMLoadingContext;
+struct PAMLoadingContext;
 
-class PGMImageDecoderPlugin final : public ImageDecoderPlugin {
+class PAMImageDecoderPlugin final : public ImageDecoderPlugin {
 public:
-    PGMImageDecoderPlugin(const u8*, size_t);
-    virtual ~PGMImageDecoderPlugin() override;
+    PAMImageDecoderPlugin(const u8*, size_t);
+    virtual ~PAMImageDecoderPlugin() override;
 
     virtual IntSize size() override;
     virtual RefPtr<Gfx::Bitmap> bitmap() override;
@@ -55,7 +55,7 @@ public:
     virtual ImageFrameDescriptor frame(size_t i) override;
 
 private:
-    OwnPtr<PGMLoadingContext> m_context;
+    OwnPtr<PAMLoadingContext> m_context;
 };
 
 }

@@ -14,8 +14,8 @@ set(SOURCES
     Painter.cpp
     Palette.cpp
     Path.cpp
+    PAMLoader.cpp
     PBMLoader.cpp
-    PGMLoader.cpp
     PNGLoader.cpp
     Point.cpp
     Rect.cpp

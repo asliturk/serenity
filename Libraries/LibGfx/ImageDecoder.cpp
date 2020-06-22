@@ -28,8 +28,8 @@
 #include <LibGfx/GIFLoader.h>
 #include <LibGfx/ICOLoader.h>
 #include <LibGfx/ImageDecoder.h>
+#include <LibGfx/PAMLoader.h>
 #include <LibGfx/PBMLoader.h>
-#include <LibGfx/PGMLoader.h>
 #include <LibGfx/PNGLoader.h>
 
 namespace Gfx {
@@ -48,11 +48,11 @@ ImageDecoder::ImageDecoder(const u8* data, size_t size)
     if (m_plugin->sniff())
         return;
 
-    m_plugin = make<PBMImageDecoderPlugin>(data, size);
+    m_plugin = make<PAMImageDecoderPlugin>(data, size);
     if (m_plugin->sniff())
         return;
 
-    m_plugin = make<PGMImageDecoderPlugin>(data, size);
+    m_plugin = make<PBMImageDecoderPlugin>(data, size);
     if (m_plugin->sniff())
         return;
 

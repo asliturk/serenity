@@ -24,7 +24,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "PGMLoader.h"
+#include "PAMLoader.h"
 #include <AK/LexicalPath.h>
 #include <AK/MappedFile.h>
 #include <AK/NetworkOrdered.h>

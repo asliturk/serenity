@@ -28,13 +28,13 @@
 #include <AK/Memory.h>
 #include <AK/SharedBuffer.h>
 #include <AK/String.h>
-#include <LibGfx/Bitmap.h>
 #include <LibGfx/BMPLoader.h>
+#include <LibGfx/Bitmap.h>
 #include <LibGfx/GIFLoader.h>
-#include <LibGfx/PBMLoader.h>
-#include <LibGfx/PGMLoader.h>
-#include <LibGfx/PNGLoader.h>
 #include <LibGfx/ICOLoader.h>
+#include <LibGfx/PAMLoader.h>
+#include <LibGfx/PBMLoader.h>
+#include <LibGfx/PNGLoader.h>
 #include <LibGfx/ShareableBitmap.h>
 #include <fcntl.h>
 #include <stdio.h>
