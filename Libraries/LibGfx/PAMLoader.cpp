@@ -33,7 +33,7 @@
 
 namespace Gfx {
 
-struct PGMLoadingContext {
+struct PAMLoadingContext {
     enum Type {
         Unknown,
         P2_ASCII,
@@ -135,7 +135,7 @@ static bool read_number(Streamer& streamer, u16* value)
     return true;
 }
 
-static bool read_comment(PGMLoadingContext& context, Streamer& streamer)
+static bool read_comment(PAMLoadingContext& context, Streamer& streamer)
 {
     (void)context;
 
@@ -160,42 +160,42 @@ static bool read_comment(PGMLoadingContext& context, Streamer& streamer)
     return exist;
 }
 
-static bool read_magic_number(PGMLoadingContext& context, Streamer& streamer)
+static bool read_magic_number(PAMLoadingContext& context, Streamer& streamer)
 {
-    if (context.state >= PGMLoadingContext::MagicNumber)
+    if (context.state >= PAMLoadingContext::MagicNumber)
         return true;
 
     if (!context.data || context.data_size < 2) {
-        context.state = PGMLoadingContext::State::Error;
+        context.state = PAMLoadingContext::State::Error;
         dbg() << "There is no enough data.";
         return false;
     }
 
     u8 magic_number[2];
     if (!streamer.read_bytes(magic_number, 2)) {
-        context.state = PGMLoadingContext::State::Error;
+        context.state = PAMLoadingContext::State::Error;
         dbg() << "We can't read magic number.";
         return false;
     }
 
     if (magic_number[0] == 'P' && magic_number[1] == '2') {
-        context.type = PGMLoadingContext::P2_ASCII;
-        context.state = PGMLoadingContext::MagicNumber;
+        context.type = PAMLoadingContext::P2_ASCII;
+        context.state = PAMLoadingContext::MagicNumber;
         return true;
     }
 
     if (magic_number[0] == 'P' && magic_number[1] == '5') {
-        context.type = PGMLoadingContext::P5_RAWBITS;
-        context.state = PGMLoadingContext::MagicNumber;
+        context.type = PAMLoadingContext::P5_RAWBITS;
+        context.state = PAMLoadingContext::MagicNumber;
         return true;
     }
 
-    context.state = PGMLoadingContext::State::Error;
+    context.state = PAMLoadingContext::State::Error;
     dbg() << "Magic number is not valid:" << (char)magic_number[0] << (char)magic_number[1];
     return false;
 }
 
-static bool read_white_space(PGMLoadingContext& context, Streamer& streamer)
+static bool read_white_space(PAMLoadingContext& context, Streamer& streamer)
 {
     bool exist = false;
     u8 byte;
@@ -224,29 +224,29 @@ static bool read_white_space(PGMLoadingContext& context, Streamer& streamer)
     return exist;
 }
 
-static bool read_width(PGMLoadingContext& context, Streamer& streamer)
+static bool read_width(PAMLoadingContext& context, Streamer& streamer)
 {
     bool result = read_number(streamer, &context.width);
     if (!result || context.width == 0) {
         return false;
     }
 
-    context.state = PGMLoadingContext::Width;
+    context.state = PAMLoadingContext::Width;
     return true;
 }
 
-static bool read_height(PGMLoadingContext& context, Streamer& streamer)
+static bool read_height(PAMLoadingContext& context, Streamer& streamer)
 {
     bool result = read_number(streamer, &context.height);
     if (!result || context.height == 0) {
         return false;
     }
 
-    context.state = PGMLoadingContext::Height;
+    context.state = PAMLoadingContext::Height;
     return true;
 }
 
-static bool read_max_val(PGMLoadingContext& context, Streamer& streamer)
+static bool read_max_val(PAMLoadingContext& context, Streamer& streamer)
 {
     bool result = read_number(streamer, &context.max_val);
     if (!result || context.max_val == 0) {
@@ -255,19 +255,19 @@ static bool read_max_val(PGMLoadingContext& context, Streamer& streamer)
 
     if (context.max_val > 255) {
         dbg() << "We can't pars 2 byte color.";
-        context.state = PGMLoadingContext::Error;
+        context.state = PAMLoadingContext::Error;
         return false;
     }
 
-    context.state = PGMLoadingContext::Maxval;
+    context.state = PAMLoadingContext::Maxval;
     return true;
 }
 
-static bool read_image_data(PGMLoadingContext& context, Streamer& streamer)
+static bool read_image_data(PAMLoadingContext& context, Streamer& streamer)
 {
     Vector<Gfx::Color> color_data;
 
-    if (context.type == PGMLoadingContext::P2_ASCII) {
+    if (context.type == PAMLoadingContext::P2_ASCII) {
         u16 value;
 
         while (true) {
@@ -279,7 +279,7 @@ static bool read_image_data(PGMLoadingContext& context, Streamer& streamer)
 
             color_data.append({ (u8)value, (u8)value, (u8)value });
         }
-    } else if (context.type == PGMLoadingContext::P5_RAWBITS) {
+    } else if (context.type == PAMLoadingContext::P5_RAWBITS) {
         u8 pixel;
         while (streamer.read(pixel)) {
             color_data.append({ pixel, pixel, pixel });
@@ -299,13 +299,13 @@ static bool read_image_data(PGMLoadingContext& context, Streamer& streamer)
         }
     }
 
-    context.state = PGMLoadingContext::State::Bitmap;
+    context.state = PAMLoadingContext::State::Bitmap;
     return true;
 }
 
-static bool decode_pgm(PGMLoadingContext& context)
+static bool decode_pam(PAMLoadingContext& context)
 {
-    if (context.state >= PGMLoadingContext::State::Decoded)
+    if (context.state >= PAMLoadingContext::State::Decoded)
         return true;
 
     Streamer streamer(context.data, context.data_size);
@@ -337,61 +337,61 @@ static bool decode_pgm(PGMLoadingContext& context)
     if (!read_image_data(context, streamer))
         return false;
 
-    context.state = PGMLoadingContext::State::Decoded;
+    context.state = PAMLoadingContext::State::Decoded;
     return true;
 }
 
-static RefPtr<Gfx::Bitmap> load_pgm_impl(const u8* data, size_t data_size)
+static RefPtr<Gfx::Bitmap> load_pam_impl(const u8* data, size_t data_size)
 {
-    PGMLoadingContext context;
+    PAMLoadingContext context;
     context.data = data;
     context.data_size = data_size;
 
-    if (!decode_pgm(context))
+    if (!decode_pam(context))
         return nullptr;
 
     return context.bitmap;
 }
 
-RefPtr<Gfx::Bitmap> load_pgm(const StringView& path)
+RefPtr<Gfx::Bitmap> load_pam(const StringView& path)
 {
     MappedFile mapped_file(path);
     if (!mapped_file.is_valid()) {
         return nullptr;
     }
 
-    auto bitmap = load_pgm_impl((const u8*)mapped_file.data(), mapped_file.size());
+    auto bitmap = load_pam_impl((const u8*)mapped_file.data(), mapped_file.size());
     if (bitmap)
-        bitmap->set_mmap_name(String::format("Gfx::Bitmap [%dx%d] - Decoded PGM: %s", bitmap->width(), bitmap->height(), LexicalPath::canonicalized_path(path).characters()));
+        bitmap->set_mmap_name(String::format("Gfx::Bitmap [%dx%d] - Decoded PAM: %s", bitmap->width(), bitmap->height(), LexicalPath::canonicalized_path(path).characters()));
     return bitmap;
 }
 
-RefPtr<Gfx::Bitmap> load_pgm_from_memory(const u8* data, size_t length)
+RefPtr<Gfx::Bitmap> load_pam_from_memory(const u8* data, size_t length)
 {
-    auto bitmap = load_pgm_impl(data, length);
+    auto bitmap = load_pam_impl(data, length);
     if (bitmap)
-        bitmap->set_mmap_name(String::format("Gfx::Bitmap [%dx%d] - Decoded PGM: <memory>", bitmap->width(), bitmap->height()));
+        bitmap->set_mmap_name(String::format("Gfx::Bitmap [%dx%d] - Decoded PAM: <memory>", bitmap->width(), bitmap->height()));
     return bitmap;
 }
 
-PGMImageDecoderPlugin::PGMImageDecoderPlugin(const u8* data, size_t size)
+PAMImageDecoderPlugin::PAMImageDecoderPlugin(const u8* data, size_t size)
 {
-    m_context = make<PGMLoadingContext>();
+    m_context = make<PAMLoadingContext>();
     m_context->data = data;
     m_context->data_size = size;
 }
 
-PGMImageDecoderPlugin::~PGMImageDecoderPlugin()
+PAMImageDecoderPlugin::~PAMImageDecoderPlugin()
 {
 }
 
-IntSize PGMImageDecoderPlugin::size()
+IntSize PAMImageDecoderPlugin::size()
 {
-    if (m_context->state == PGMLoadingContext::State::Error)
+    if (m_context->state == PAMLoadingContext::State::Error)
         return {};
 
-    if (m_context->state < PGMLoadingContext::State::Decoded) {
-        bool success = decode_pgm(*m_context);
+    if (m_context->state < PAMLoadingContext::State::Decoded) {
+        bool success = decode_pam(*m_context);
         if (!success)
             return {};
     }
@@ -399,13 +399,13 @@ IntSize PGMImageDecoderPlugin::size()
     return { m_context->width, m_context->height };
 }
 
-RefPtr<Gfx::Bitmap> PGMImageDecoderPlugin::bitmap()
+RefPtr<Gfx::Bitmap> PAMImageDecoderPlugin::bitmap()
 {
-    if (m_context->state == PGMLoadingContext::State::Error)
+    if (m_context->state == PAMLoadingContext::State::Error)
         return nullptr;
 
-    if (m_context->state < PGMLoadingContext::State::Decoded) {
-        bool success = decode_pgm(*m_context);
+    if (m_context->state < PAMLoadingContext::State::Decoded) {
+        bool success = decode_pam(*m_context);
         if (!success)
             return nullptr;
     }
@@ -414,13 +414,13 @@ RefPtr<Gfx::Bitmap> PGMImageDecoderPlugin::bitmap()
     return m_context->bitmap;
 }
 
-void PGMImageDecoderPlugin::set_volatile()
+void PAMImageDecoderPlugin::set_volatile()
 {
     if (m_context->bitmap)
         m_context->bitmap->set_volatile();
 }
 
-bool PGMImageDecoderPlugin::set_nonvolatile()
+bool PAMImageDecoderPlugin::set_nonvolatile()
 {
     if (!m_context->bitmap)
         return false;
@@ -428,7 +428,7 @@ bool PGMImageDecoderPlugin::set_nonvolatile()
     return m_context->bitmap->set_nonvolatile();
 }
 
-bool PGMImageDecoderPlugin::sniff()
+bool PAMImageDecoderPlugin::sniff()
 {
     if (m_context->data_size < 2)
         return false;
@@ -442,22 +442,22 @@ bool PGMImageDecoderPlugin::sniff()
     return false;
 }
 
-bool PGMImageDecoderPlugin::is_animated()
+bool PAMImageDecoderPlugin::is_animated()
 {
     return false;
 }
 
-size_t PGMImageDecoderPlugin::loop_count()
+size_t PAMImageDecoderPlugin::loop_count()
 {
     return 0;
 }
 
-size_t PGMImageDecoderPlugin::frame_count()
+size_t PAMImageDecoderPlugin::frame_count()
 {
     return 1;
 }
 
-ImageFrameDescriptor PGMImageDecoderPlugin::frame(size_t i)
+ImageFrameDescriptor PAMImageDecoderPlugin::frame(size_t i)
 {
     if (i > 0) {
         return { bitmap(), 0 };
