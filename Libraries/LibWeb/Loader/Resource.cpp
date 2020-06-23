@@ -102,6 +102,8 @@ static String guess_mime_type_based_on_filename(const URL& url)
         return "text/markdown";
     if (lowercase_url.ends_with(".html") || lowercase_url.ends_with(".htm"))
         return "text/html";
+    if (lowercase_url.ends_with(".xpm"))
+        return "image/x-xpixmap";
     if (lowercase_url.ends_with("/"))
         return "text/html";
     return "text/plain";
