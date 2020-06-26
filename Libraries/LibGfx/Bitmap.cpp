@@ -37,6 +37,7 @@
 #include <LibGfx/PNGLoader.h>
 #include <LibGfx/PPMLoader.h>
 #include <LibGfx/ShareableBitmap.h>
+#include <LibGfx/XPMLoader.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <sys/mman.h>

@@ -33,15 +33,16 @@
 #include <LibGfx/Forward.h>
 #include <LibGfx/Rect.h>
 
-#define ENUMERATE_IMAGE_FORMATS           \
-    __ENUMERATE_IMAGE_FORMAT(pbm, ".pbm") \
-    __ENUMERATE_IMAGE_FORMAT(png, ".png") \
-    __ENUMERATE_IMAGE_FORMAT(ppm, ".ppm") \
-    __ENUMERATE_IMAGE_FORMAT(gif, ".gif") \
-    __ENUMERATE_IMAGE_FORMAT(bmp, ".bmp") \
-    __ENUMERATE_IMAGE_FORMAT(ico, ".ico") \
-    __ENUMERATE_IMAGE_FORMAT(jpg, ".jpg") \
-    __ENUMERATE_IMAGE_FORMAT(jpg, ".jpeg")
+#define ENUMERATE_IMAGE_FORMATS            \
+    __ENUMERATE_IMAGE_FORMAT(pbm, ".pbm")  \
+    __ENUMERATE_IMAGE_FORMAT(png, ".png")  \
+    __ENUMERATE_IMAGE_FORMAT(ppm, ".ppm")  \
+    __ENUMERATE_IMAGE_FORMAT(gif, ".gif")  \
+    __ENUMERATE_IMAGE_FORMAT(bmp, ".bmp")  \
+    __ENUMERATE_IMAGE_FORMAT(ico, ".ico")  \
+    __ENUMERATE_IMAGE_FORMAT(jpg, ".jpg")  \
+    __ENUMERATE_IMAGE_FORMAT(jpg, ".jpeg") \
+    __ENUMERATE_IMAGE_FORMAT(xpm, ".xpm")
 
 namespace Gfx {
 
