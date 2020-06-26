@@ -49,7 +49,7 @@ KernelRng::KernelRng()
             u32 value = 0;
             asm volatile(
                 "1:\n"
-                "rdseed %0\n"
+                "rdrand %0\n"
                 "jnc 1b\n"
                 : "=r"(value));
 
